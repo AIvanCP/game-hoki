@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using System.Collections;
 
 public class BallController : MonoBehaviour
 {
@@ -26,6 +27,9 @@ public class BallController : MonoBehaviour
 
     public AudioSource sfxAudioSource;
     public AudioClip hitSound;
+
+    [SerializeField]
+    private GameObject goalScreen;
 
 
 
@@ -221,7 +225,8 @@ public class BallController : MonoBehaviour
             player1Score++;
             player1ScoreText.text = player1Score.ToString();
             ResetBall();
-            LaunchBall();
+            // LaunchBall();
+            StartCoroutine(CountdownAfterGoal());
         }
 
         if (coll.gameObject.name == "LeftLine")
@@ -229,12 +234,27 @@ public class BallController : MonoBehaviour
             player2Score++;
             player2ScoreText.text = player2Score.ToString();
             ResetBall();
-            LaunchBall();
+            // LaunchBall();
+            StartCoroutine(CountdownAfterGoal());
         }
     }
 
+    private IEnumerator CountdownAfterGoal()
+    {
+        // Ngebug tidak 1lanjut setelah timescale = 0.
+        // TODO: Fix this
+        Time.timeScale = 0f;
+        goalScreen.SetActive(true);
+        Debug.Log("Wait 3s for next round...");
+        yield return new WaitForSeconds(3f);
+        Time.timeScale = 1f;
+        goalScreen.SetActive(false);
+        LaunchBall();
+        Debug.Log("Goal!");
+    }
+
     // Apply velocity on the next frame to avoid physics glitches
-    System.Collections.IEnumerator ApplyVelocityNextFrame(Vector2 newVelocity)
+    IEnumerator ApplyVelocityNextFrame(Vector2 newVelocity)
     {
         yield return null; // Wait for the next frame
         if (rigid != null)
