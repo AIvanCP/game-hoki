@@ -224,29 +224,40 @@ public class BallController : MonoBehaviour
         {
             player1Score++;
             player1ScoreText.text = player1Score.ToString();
-            ResetBall();
-            // LaunchBall();
-            StartCoroutine(CountdownAfterGoal());
+            if (goalScreen != null)
+            {
+                StartCoroutine(CountdownAfterGoal());
+            }
+            else
+            {
+                ResetBall();
+                LaunchBall();
+            }
         }
 
         if (coll.gameObject.name == "LeftLine")
         {
             player2Score++;
             player2ScoreText.text = player2Score.ToString();
-            ResetBall();
-            // LaunchBall();
-            StartCoroutine(CountdownAfterGoal());
+            if (goalScreen != null)
+            {
+                StartCoroutine(CountdownAfterGoal());
+            }
+            else
+            {
+                ResetBall();
+                LaunchBall();
+            }
         }
     }
 
     private IEnumerator CountdownAfterGoal()
     {
-        // Ngebug tidak 1lanjut setelah timescale = 0.
-        // TODO: Fix this
         Time.timeScale = 0f;
+        ResetBall();
         goalScreen.SetActive(true);
         Debug.Log("Wait 3s for next round...");
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSecondsRealtime(3f);
         Time.timeScale = 1f;
         goalScreen.SetActive(false);
         LaunchBall();

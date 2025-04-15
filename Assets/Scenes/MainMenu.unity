@@ -650,6 +650,7 @@ MonoBehaviour:
   player2ScoreText: {fileID: 2093540873}
   sfxAudioSource: {fileID: 0}
   hitSound: {fileID: 8300000, guid: fe89bde17f846b9439119b418fd69044, type: 3}
+  goalScreen: {fileID: 0}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
