@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Game Hoki.sln"
+    "dotnet.defaultSolution": "game-hoki.sln"
 }

@@ -1,4 +1,0 @@
-repository "Game Hoki/Game Hoki@1374760444019@cloud"
-  path "/"
-    br "/main"
-    co "/main"
