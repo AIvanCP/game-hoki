@@ -5,21 +5,27 @@ public class AIMovementController : MonoBehaviour
 {
     public float batasAtas;
     public float batasBawah;
+    public float batasKiri = -8f;
+    public float batasKanan = 8f;
 
     [SerializeField]
     private float kecepatan = 5f;
     [SerializeField]
-    private float reactionTime = 0.1f; // Time to react to ball changes
+    private float reactionTime = 0.1f;
     [SerializeField]
-    private float predictionAccuracy = 0.8f; // How accurate the AI predicts (0-1)
+    private float predictionAccuracy = 0.8f;
     [SerializeField]
-    private float randomMovementChance = 0.2f; // Chance to move randomly
+    private float randomMovementChance = 0.2f;
     [SerializeField]
-    private float difficultyMultiplier = 1.0f; // Scales all difficulty parameters
+    private float difficultyMultiplier = 1.0f;
     [SerializeField]
-    private Transform ballTransform; // Reference to the ball
+    private Transform ballTransform;
 
-    private int arah = 1; // 1 = naik, -1 = turun
+    [Header("Control Mode")]
+    public bool isControlledByPlayer = false;
+    public bool isFreeMove = false;
+
+    private int arah = 1;
     private float targetY;
     private float currentSpeed;
     private float lastDecisionTime;
@@ -28,15 +34,71 @@ public class AIMovementController : MonoBehaviour
 
     private void Start()
     {
+        isControlledByPlayer = MainMenuManager.isMultiplayerMode;
         targetY = transform.position.y;
         currentSpeed = kecepatan;
         lastDecisionTime = Time.time;
-        StartCoroutine(UpdateDecision());
+
+        if (!isControlledByPlayer)
+        {
+            StartCoroutine(UpdateDecision());
+        }
     }
 
     void Update()
     {
-        // Move towards the target position
+        if (isControlledByPlayer)
+        {
+            if (isFreeMove)
+                HandlePlayerFreeMove();
+            else
+                HandlePlayerInput();
+        }
+        else
+        {
+            if (isFreeMove)
+                HandleAIFreeMove();
+            else
+                HandleAIMovement();
+        }
+    }
+
+    private void HandlePlayerInput()
+    {
+        float move = 0f;
+
+        if (Input.GetKey(KeyCode.UpArrow))
+        {
+            move = kecepatan * Time.deltaTime;
+        }
+        else if (Input.GetKey(KeyCode.DownArrow))
+        {
+            move = -kecepatan * Time.deltaTime;
+        }
+
+        float nextY = Mathf.Clamp(transform.position.y + move, batasBawah, batasAtas);
+        transform.position = new Vector3(transform.position.x, nextY, transform.position.z);
+    }
+
+    private void HandlePlayerFreeMove()
+    {
+        float move = 0f;
+
+        if (Input.GetKey(KeyCode.LeftArrow))
+        {
+            move = -kecepatan * Time.deltaTime;
+        }
+        else if (Input.GetKey(KeyCode.RightArrow))
+        {
+            move = kecepatan * Time.deltaTime;
+        }
+
+        float nextX = Mathf.Clamp(transform.position.x + move, batasKiri, batasKanan);
+        transform.position = new Vector3(nextX, transform.position.y, transform.position.z);
+    }
+
+    private void HandleAIMovement()
+    {
         float gerak = 0;
 
         if (Mathf.Abs(transform.position.y - targetY) > 0.1f)
@@ -46,34 +108,29 @@ public class AIMovementController : MonoBehaviour
         }
 
         float nextPos = transform.position.y + gerak;
-
-        // Ensure we stay within boundaries
-        if (nextPos >= batasAtas)
-        {
-            nextPos = batasAtas;
-        }
-        else if (nextPos <= batasBawah)
-        {
-            nextPos = batasBawah;
-        }
-
+        nextPos = Mathf.Clamp(nextPos, batasBawah, batasAtas);
         transform.position = new Vector3(transform.position.x, nextPos, transform.position.z);
+    }
+
+    private void HandleAIFreeMove()
+    {
+        if (ballTransform == null) return;
+
+        Vector3 pos = transform.position;
+        float targetX = ballTransform.position.x;
+        pos.x = Mathf.MoveTowards(pos.x, targetX, kecepatan * Time.deltaTime);
+        pos.x = Mathf.Clamp(pos.x, batasKiri, batasKanan);
+        transform.position = pos;
     }
 
     private IEnumerator UpdateDecision()
     {
         while (true)
         {
-            // Wait for reaction time (slower = easier)
             yield return new WaitForSeconds(reactionTime / difficultyMultiplier);
-
-            // Decide what to do
             DecideMovement();
-
-            // Vary the AI speed randomly for more human-like movement
             currentSpeed = kecepatan * Random.Range(0.8f, 1.2f) * difficultyMultiplier;
 
-            // Occasionally make a mistake
             if (Random.value < 0.1f && !makingMistake)
             {
                 StartCoroutine(MakeMistake());
@@ -83,27 +140,23 @@ public class AIMovementController : MonoBehaviour
 
     private void DecideMovement()
     {
-        // If there's no ball, just patrol
         if (ballTransform == null)
         {
             PatrolMovement();
             return;
         }
 
-        // Sometimes move randomly for unpredictability
         if (Random.value < randomMovementChance && !makingMistake)
         {
             RandomMovement();
             return;
         }
 
-        // Otherwise, try to track the ball with some prediction
         PredictBallMovement();
     }
 
     private void PatrolMovement()
     {
-        // Simple patrol between upper and lower bounds
         if (transform.position.y >= batasAtas - 0.5f)
         {
             arah = -1;
@@ -118,42 +171,31 @@ public class AIMovementController : MonoBehaviour
 
     private void RandomMovement()
     {
-        // Move to a random position within bounds
         targetY = Random.Range(batasBawah, batasAtas);
     }
 
     private void PredictBallMovement()
     {
-        // Calculate where the ball might be when it reaches the paddle
         if (ballTransform != null)
         {
-            // Get ball's rigidbody if it has one
             Rigidbody2D ballRb = ballTransform.GetComponent<Rigidbody2D>();
             Vector2 ballVelocity = (ballRb != null) ? ballRb.linearVelocity : Vector2.zero;
 
-            // Basic distance calculation
             float distanceToBall = Mathf.Abs(transform.position.x - ballTransform.position.x);
 
-            // If ball is coming toward this paddle
             if ((transform.position.x < ballTransform.position.x && ballVelocity.x < 0) ||
                 (transform.position.x > ballTransform.position.x && ballVelocity.x > 0))
             {
-                // Time for ball to reach paddle
                 float timeToReach = distanceToBall / Mathf.Abs(ballVelocity.x);
-
-                // Predicted Y position
                 float predictedY = ballTransform.position.y + (ballVelocity.y * timeToReach);
 
-                // Apply accuracy based on difficulty
                 float errorFactor = (1 - predictionAccuracy * difficultyMultiplier);
                 float predictionError = Random.Range(-5f, 5f) * errorFactor;
 
-                // Target with error
                 targetY = Mathf.Clamp(predictedY + predictionError, batasBawah, batasAtas);
             }
             else
             {
-                // Ball moving away, return to center with some randomness
                 targetY = Mathf.Lerp(batasBawah, batasAtas, 0.5f) + Random.Range(-1f, 1f);
             }
         }
@@ -162,18 +204,11 @@ public class AIMovementController : MonoBehaviour
     private IEnumerator MakeMistake()
     {
         makingMistake = true;
-
-        // Move in the wrong direction briefly
-        float wrongDirection = Random.Range(batasBawah, batasAtas);
-        targetY = wrongDirection;
-
-        // Hold the mistake for a short time
+        targetY = Random.Range(batasBawah, batasAtas);
         yield return new WaitForSeconds(Random.Range(0.2f, 0.5f));
-
         makingMistake = false;
     }
 
-    // Called by external scripts to adjust difficulty
     public void SetDifficulty(float difficulty)
     {
         difficultyMultiplier = difficulty;
