@@ -1921,6 +1921,7 @@ GameObject:
   - component: {fileID: 1299578067}
   - component: {fileID: 1299578070}
   - component: {fileID: 1299578069}
+  - component: {fileID: 1299578072}
   - component: {fileID: 1299578071}
   m_Layer: 0
   m_Name: Player 2
@@ -2059,16 +2060,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   batasAtas: 2.7
   batasBawah: -2.7
-  batasKiri: -8
-  batasKanan: 8
   kecepatan: 12
   reactionTime: 0.1
   predictionAccuracy: 0.8
   randomMovementChance: 0.2
   difficultyMultiplier: 1.1
   ballTransform: {fileID: 503162917}
-  isControlledByPlayer: 0
-  isFreeMove: 0
+--- !u!114 &1299578072
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1299578066}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9aaad745728b8994fa8727c2a6ee4462, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  batasAtas: 2.7
+  batasBawah: -2.7
+  kecepatan: 12
+  axis: Vertical2
 --- !u!1 &1344817845
 GameObject:
   m_ObjectHideFlags: 0
@@ -4202,16 +4215,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   batasAtas: 2.7
   batasBawah: -2.7
-  batasKiri: -8
-  batasKanan: 8
   kecepatan: 12
   reactionTime: 0.1
   predictionAccuracy: 0.8
   randomMovementChance: 0.2
   difficultyMultiplier: 1.1
   ballTransform: {fileID: 503162917}
-  isControlledByPlayer: 0
-  isFreeMove: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

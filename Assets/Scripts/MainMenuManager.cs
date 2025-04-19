@@ -26,6 +26,19 @@ public class MainMenuManager : MonoBehaviour
 
         if (optionsManager != null)
             optionsManager.SetActive(false); // ⬅️ hide OptionsManager saat awal
+
+        var player2 = GameObject.Find("Player 2");
+    if (player2 != null)
+    {
+        var ai = player2.GetComponent<AIMovementController>();
+        var p2 = player2.GetComponent<Player2MovementController>();
+
+        bool isMulti = isMultiplayerMode || isFreeMoveEnabled;
+
+        if (ai != null) ai.enabled = !isMulti;
+        if (p2 != null) p2.enabled = isMulti;
+    }
+
     }
 
     void Update()
@@ -103,10 +116,12 @@ public class MainMenuManager : MonoBehaviour
         {
             case 0: // Single
                 isMultiplayerMode = false;
+                UpdatePlayer2Control();
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
                 break;
             case 1: // Multi
                 isMultiplayerMode = true;
+                UpdatePlayer2Control();
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
                 break;
             case 2: // Options
@@ -142,4 +157,18 @@ public class MainMenuManager : MonoBehaviour
         isFreeMoveEnabled = !isFreeMoveEnabled;
         Debug.Log("Free Move Toggled: " + isFreeMoveEnabled);
     }
+    void UpdatePlayer2Control()
+{
+    var player2 = GameObject.Find("Player 2");
+    if (player2 != null)
+    {
+        var ai = player2.GetComponent<AIMovementController>();
+        var p2 = player2.GetComponent<Player2MovementController>();
+
+        bool isMulti = isMultiplayerMode || isFreeMoveEnabled;
+
+        if (ai != null) ai.enabled = !isMulti;
+        if (p2 != null) p2.enabled = isMulti;
+    }
+}
 }

@@ -1148,6 +1148,9 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 5785535484444779365, guid: cbfb58491ffd4ce4191e82544bc43160, type: 3}
       insertIndex: -1
+      addedObject: {fileID: 1748434223}
+    - targetCorrespondingSourceObject: {fileID: 5785535484444779365, guid: cbfb58491ffd4ce4191e82544bc43160, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 1748434222}
   m_SourcePrefab: {fileID: 100100000, guid: cbfb58491ffd4ce4191e82544bc43160, type: 3}
 --- !u!1 &759049035
@@ -2034,6 +2037,22 @@ MonoBehaviour:
   randomMovementChance: 0.2
   difficultyMultiplier: 1.2
   ballTransform: {fileID: 503162917}
+--- !u!114 &1748434223
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1748434220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9aaad745728b8994fa8727c2a6ee4462, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  batasAtas: 2.7
+  batasBawah: -2.7
+  kecepatan: 12
+  axis: Vertical2
 --- !u!1 &1766435621
 GameObject:
   m_ObjectHideFlags: 0
