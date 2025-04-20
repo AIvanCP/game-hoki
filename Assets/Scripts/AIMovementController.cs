@@ -28,6 +28,12 @@ public class AIMovementController : MonoBehaviour
 
     private void Start()
     {
+        if (MainMenuManager.isMultiplayerMode || MainMenuManager.isFreeMoveEnabled)
+        {
+            // Disable diri sendiri kalau multiplayer
+            this.enabled = false;
+            return;
+        }
         targetY = transform.position.y;
         currentSpeed = kecepatan;
         lastDecisionTime = Time.time;
